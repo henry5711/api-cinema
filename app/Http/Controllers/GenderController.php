@@ -6,6 +6,7 @@ use App\Models\Gender;
 use App\Http\Requests\StoreGenderRequest;
 use App\Http\Requests\UpdateGenderRequest;
 use App\Http\Resources\GenderResource;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +52,7 @@ class GenderController extends Controller
     {
         try {
             DB::beginTransaction();
-            $id =  $this->creategender($request);
+            $id =  $this->createGender($request);
 
             $response = Gender::where('id', $id)->first();
 
@@ -72,6 +73,15 @@ class GenderController extends Controller
             "message"       => "Se registro una nuevo gendere",
             "response"      => genderResource::make($response),
         ]);
+    }
+
+    protected function createGender($request)
+    {
+        $gender = new Gender();
+        $gender->name = $request->name;
+        $gender->description = $request->description;
+        $gender->save();
+        return  $gender->id;
     }
 
     /**
@@ -118,7 +128,7 @@ class GenderController extends Controller
             DB::beginTransaction();
 
             $gender = Gender::findOrFail($id);
-            $this->updategender($gender, $request);
+            $this->updateGender($gender, $request);
 
             $response = Gender::where('id', $id)->first();
 
@@ -138,6 +148,16 @@ class GenderController extends Controller
             "message"       => "gender actulizado",
             "response"      => genderResource::make($response),
         ]);
+    }
+
+    protected function updateGender($client, $request)
+    {
+
+        $client->name  = $request->name  ? $request->name  :  $client->name;
+        $client->description  = $request->description  ? $request->description  : $client->description;
+
+        $client->updated_at  = Carbon::now();
+        $client->save();
     }
 
     /**

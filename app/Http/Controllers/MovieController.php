@@ -6,6 +6,7 @@ use App\Models\Movie;
 use App\Http\Requests\StoreMovieRequest;
 use App\Http\Requests\UpdateMovieRequest;
 use App\Http\Resources\MovieResource;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -34,11 +35,10 @@ class MovieController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-            return response()->json([
-                "message"       => "movies",
-                "response"      => MovieResource::collection($Movie),
-            ]);
-
+        return response()->json([
+            "message"       => "movies",
+            "response"      => MovieResource::collection($Movie),
+        ]);
     }
 
     /**
@@ -72,6 +72,17 @@ class MovieController extends Controller
             "message"       => "Se registro una nuevo Movie",
             "response"      => MovieResource::make($response),
         ]);
+    }
+
+    protected function createMovie($request)
+    {
+        $movie = new Movie();
+        $movie->name = $request->name;
+        $movie->gender_id = $request->gender_id;
+        $movie->duration = $request->duration;
+        $movie->description = $request->description;
+        $movie->save();
+        return  $movie->id;
     }
 
     /**
@@ -112,7 +123,7 @@ class MovieController extends Controller
      * @param  \App\Models\Movie  $movie
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMovieRequest $request,$id)
+    public function update(UpdateMovieRequest $request, $id)
     {
         try {
             DB::beginTransaction();
@@ -138,6 +149,16 @@ class MovieController extends Controller
             "message"       => "Movie actulizado",
             "response"      => MovieResource::make($response),
         ]);
+    }
+
+    protected function updateMovie($movie, $request)
+    {
+        $movie->name  = $request->name  ? $request->name  :  $movie->name;
+        $movie->description  = $request->description  ? $request->description  : $movie->description;
+        $movie->duration  = $request->duration  ? $request->duration  :  $movie->duration;
+        $movie->gender_id  = $request->gender_id  ? $request->gender_id  :  $movie->gender_id;
+        $movie->updated_at  = Carbon::now();
+        $movie->save();
     }
 
     /**
@@ -197,10 +218,9 @@ class MovieController extends Controller
         }
 
 
-            return response()->json([
-                "message"       => "filtro Movie",
-                "response"      => MovieResource::collection($Movie),
-            ]);
-
+        return response()->json([
+            "message"       => "filtro Movie",
+            "response"      => MovieResource::collection($Movie),
+        ]);
     }
 }
