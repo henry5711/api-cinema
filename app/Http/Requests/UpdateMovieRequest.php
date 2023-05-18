@@ -13,7 +13,7 @@ class UpdateMovieRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,10 @@ class UpdateMovieRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name'                  => 'required|string',
+            'description'                 => 'required|string',
+            'duration'                 => 'required|string',
+            'gender_id'            => 'required|integer|exists:genders,id',
         ];
     }
 }
