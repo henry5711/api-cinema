@@ -14,6 +14,23 @@ class MovieResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->resource->id,
+            'attributes' => [
+                'name'        => $this->resource->name,
+                'duration'    => $this->resource->duration,
+                'gender_id'           => $this->resource->gender_id,
+                'description' => $this->resource->description,
+                'deleted_at'     => $this->resource->deleted_at,
+                'created_at'     => $this->resource->created_at,
+                'updated_at'     => $this->resource->updated_at,
+
+            ],
+            'relationships' => [
+                'gender' => $this->whenLoaded('gender', function() {
+                    return GenderResource::make($this->resource->gender);
+                })
+            ],
+        ];
     }
 }

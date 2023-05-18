@@ -14,6 +14,15 @@ class GenderResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->resource->id,
+            'attributes' => [
+                'name'        => $this->resource->name,
+                'description'    => $this->resource->description,
+                'deleted_at'     => $this->resource->deleted_at,
+                'created_at'     => $this->resource->created_at,
+                'updated_at'     => $this->resource->updated_at,
+            ]
+        ];
     }
 }
